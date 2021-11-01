@@ -79,5 +79,73 @@ Lose points if: you have gone through the work to chose the correct responsbile 
 
 ANOVA done to present means, and box plot representing a line only at the median. Once you decide the appropriate method, be sure you are using that same method to present it visually as well. 
 
+do ?wilcox.test in consol to see documentation
+scroll down to values for names of the value you want to write in in-line text 
+type mwu$p.value in consol to pull value up and write as in-line text
+
+Kruskal Wallace Test `kruskal.test`
+
+## Linear regression
+
+Simple linear regression (single dependent variable, a single independent variable)
+
+
+```{r}
+# make an exploratory plot of penguin body mass (y-axis) versus flipper length (x-axis)
+# deal with exploratory analysis by putting include = FALSE in the code chunk header so it does not show up in your knitted document
+ggplot(data = penguins, aes(x = flipper_length_mm, y = body_mass_g)) +
+  geom_point() + 
+  geom_smooth(method = "lm") # add a linear model, this is ok for exploratory, but do not add this to final if I cant explain it entirely
+
+```
+
+Find a linear regression model using ordinary least squares describing the relationship between flipper length and body mass for these penguins.
+
+3 pieces:
+
+- what type of model?
+- What is the relationship to model (Dependent Variable DV ~ Ind. Variable IV(s))
+- Where is the data that's used to create this model?
+
+```{r}
+penguin_lm <- lm(body_mass_g ~ flipper_length_mm, data = penguins) # how does body_mass_g change in relation to flipper_length, get my data from penguins, lm = linear model
+
+#then call it in console penguin_lm to see what you got
+# y= mx+b y = body mass mx = flipper length + some error
+# body_mass = 49.7 (flipper_length) - 5780.83
+# coefficient for flipper length 49.7 means for everyone mm increase in flipper length i expect a 49.7 gram increase in body mass because that's the slope that explains the relationship between these 2 variables. 
+
+#penguin_lm
+
+# Call:
+# lm(formula = body_mass_g ~ flipper_length_mm, data = penguins)
+
+# Coefficients:
+      #(Intercept)  flipper_length_mm  
+         # -5780.83              49.69  
+```
+
+### broom package returns model outputs as tidy data frames
+
+```{r}
+penguin_lm_tidy <- broom::tidy(penguin_lm) #from the broom package #you can do tidy(penguin_lm)
+
+penguin_lm_tidy
+
+broom::glance()
+```
+
+How can I actually include my model equation in a report?
+
+In comes equatiomatic!!
+
+```{r}
+extract_eq(model = penguin_lm, use_coefs = TRUE)
+```
+
+```{r}
+plot(penguin_lm)  # these diagnostic plots give us some ways to start exploring the assumptions we have when we decide to run a linear model
+```
+
 
 
