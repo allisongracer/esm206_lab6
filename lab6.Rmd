@@ -7,24 +7,77 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(palmerpenguins)
+library(broom)
+library(equatiomatic)
 ```
 
-## R Markdown
+## Example of a rank-based test 
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+Refer to lecture 11 for additional notes on rank-based test.
+What we are comparing across groups is the ranks instead of the actual values. 
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+We'll make our own samples, using a pseudorandom generator. type `?set.seed` in console to read about this function. It is a random number generator. Allows us to set a starting point from which we want the random values. 
 
-```{r cars}
-summary(cars)
+```{r}
+set.seed(1414) # set.seed tell R to create a random sample of integer values
+gp_1 <- sample.int(20, size = 15, replace = TRUE) # max is 20, sample size is 15, replace is true (re-sampling)
+set.seed(1424)
+gp_2 <- sample.int(30, size = 15, replace = TRUE) # max is 30, sample size is 15 replace is true
 ```
 
-## Including Plots
+```{r}
+hist(gp_1) # making a quick histogram with a vector of numbers
 
-You can also embed plots, for example:
+hist(gp_2) # sample size is small, not convinced based on central limit therorem that these means will be normally distributed
 
-```{r pressure, echo=FALSE}
-plot(pressure)
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+Try a t-test:
+```{r}
+t.test(gp_1, gp_2)
+```
+
+P value = .1982 
+What does this p-value mean?
+
+If these samples were drawn from populations with the same mean, the probability of taking two random samples with means *at least as different* as the sample means we found by random chance (taking into account spread, n) is 19.8% (write 19.8% using in-line code for reports).
+
+Do we have sufficient evidence to reject the null hypothesis? No, it's super likely, 20% chance that these were
+
+Retain(fail to reject) the null hypothesis. 
+
+Warning: "accept" null, dont use this language in a final report. You should be saying there is or isn't significant difference between the samples. 
+
+Now let's compare this outcome to a rank-based test.
+
+## Mann Whitney U unpaired rank-based test (to compare ranks)
+
+```{r}
+mwu <- wilcox.test(gp_1, gp_2)
+
+mwu # look at the outcome of mwu we ran above
+```
+
+null hypotheiss: drawn from populations with the same ranks
+
+p-value is 0.28
+
+what does this p-value say?
+
+If these samples were drawn from populations with the same ranks(medians), the probability of finding two samples with ranks *at least as different* as those in our samples is 0.28.
+
+There is no significant difference in ranks(medians) between group 1 and group 2 (statistical summary). 
+
+Median scores for group 1 (M = median value i.e. 14) and group 2 (M = 12) did not differ significantly (Mann Whitney U test: U(df) = 86, p = 0.28).
+
+Does this differ from what we learned from running our t-test?
+Our conclusion is the same that we retain the null hypothesis of either equal means or equal medians regardless of etiher test we use. 
+
+Lose points if: you have gone through the work to chose the correct responsbile test to use, make sure that it aligns with everything else you are presenting to your audience. 
+
+ANOVA done to present means, and box plot representing a line only at the median. Once you decide the appropriate method, be sure you are using that same method to present it visually as well. 
+
+
+
